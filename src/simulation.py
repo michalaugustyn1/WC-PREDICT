@@ -13,7 +13,7 @@ from src.tournament import GROUPS, TEAM_STATS, simulate_group_stage, bracket_r32
 
 _DEFAULT_STATS = {"elo": 1500, "goals_scored": 1.2, "goals_conceded": 1.2, "win_rate": 0.33}
 
-ROUNDS = ["qualified", "r16", "qf", "sf", "final", "winner"]
+ROUNDS = ["lucky_losers", "qualified", "r16", "qf", "sf", "final", "winner"]
 GROUP_POSITIONS = ["p1st", "p2nd", "p3rd", "p4th"]
 
 
@@ -65,6 +65,8 @@ def simulate_once(clf) -> dict:
     # Round of 32: 16 matchups → 16 survivors (R16)
     matchups = bracket_r32(group_results)
     qualified = {t for pair in matchups for t in pair}   # 32 teams
+    _, _, best8_thirds = get_r32_teams(group_results)
+    lucky_losers = set(best8_thirds)
     r16_teams = [_knockout_match(a, b, clf) for a, b in matchups]
     qf_teams  = _play_knockout_round(r16_teams, clf)
     sf_teams  = _play_knockout_round(qf_teams, clf)
@@ -73,6 +75,7 @@ def simulate_once(clf) -> dict:
 
     return {
         "group_positions": group_positions,
+        "lucky_losers": lucky_losers,
         "qualified": qualified,
         "r16": set(r16_teams),
         "qf": set(qf_teams),
@@ -117,6 +120,7 @@ def run(clf, n: int = 50_000) -> pd.DataFrame:
             "p_2nd":      round(c.get("p2nd", 0) / n * 100, 1),
             "p_3rd":      round(c.get("p3rd", 0) / n * 100, 1),
             "p_4th":      round(c.get("p4th", 0) / n * 100, 1),
+            "p_lucky_loser": round(c.get("lucky_losers", 0) / n * 100, 1),
             "p_qualified": round(c.get("qualified", 0) / n * 100, 1),
             "p_r16":      round(c.get("r16", 0) / n * 100, 1),
             "p_qf":       round(c.get("qf", 0) / n * 100, 1),

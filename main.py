@@ -73,8 +73,8 @@ def run_predict(clf=None, n_sims: int = 50_000):
     for group_name in sorted(results["group"].unique()):
         grp = results[results["group"] == group_name].sort_values("p_1st", ascending=False)
         print(f"\n  Group {group_name}")
-        print(f"  {'Team':<28} {'1st':>5} {'2nd':>5} {'3rd':>5} {'4th':>5} {'Qual':>6}")
-        print(f"  {'-'*58}")
+        print(f"  {'Team':<28} {'1st':>5} {'2nd':>5} {'3rd':>5} {'4th':>5} {'LL':>5} {'Qual':>6}")
+        print(f"  {'-'*64}")
         for _, row in grp.iterrows():
             print(
                 f"  {row['team']:<28} "
@@ -82,6 +82,7 @@ def run_predict(clf=None, n_sims: int = 50_000):
                 f"{row['p_2nd']:>4.1f}% "
                 f"{row['p_3rd']:>4.1f}% "
                 f"{row['p_4th']:>4.1f}% "
+                f"{row['p_lucky_loser']:>4.1f}% "
                 f"{row['p_qualified']:>5.1f}%"
             )
 
